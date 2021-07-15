@@ -1,3 +1,6 @@
+let steering_deg = 0;
+let steering = 0;
+let speed = 0;
 
 let round_num = (num, round) => {
 	return Math.floor(num / round) * round;
@@ -318,7 +321,7 @@ let make_island_solid = (boxes) => {
 };
 
 
-for (let island of document.body.children)
+for (let island of Array.from(document.body.children).filter(child => {if (child.tagName == 'div') {return child}}))
 {
 	round_island(island.children, 30, 30);
 }
@@ -329,21 +332,21 @@ let y = 0;
 
 document.body.addEventListener('keydown', (e) => {
 	let keycode = e.which || e.keyCode;
-	if (keycode == 38)
+	if (keycode == 38)//up
 	{
-		--yadd;
+		speed < 40? ++speed: speed;
 	}
-	else if (keycode == 40)
+	else if (keycode == 40)//down
 	{
-		++yadd;
+		speed > 0? --speed : speed;
 	}
-	else if (keycode == 37)
+	else if (keycode == 37)//left
 	{
-		--xadd;
+		--steering_deg;
 	}
-	else if (keycode == 39)
+	else if (keycode == 39)//right
 	{
-		++xadd;
+		++steering_deg;
 	}
 });
 
@@ -421,9 +424,11 @@ let check_limits = () => {
 	}
 };
 
+let sound = document.body.querySelector('audio');
+sound.mozPreservesPitch = false;
 
 let calculate_deg = () => {
-	return Math.atan2(yadd, xadd) * 180 / Math.PI;
+	return speed > 10? Math.atan2(yadd, xadd) * 180 / Math.PI : steering_deg;
 };
 let airplane_anim = setInterval(() => {
 	x -= xadd;
@@ -432,8 +437,29 @@ let airplane_anim = setInterval(() => {
 	document.body.style.top = `${y}px`;
 	let airplane = document.querySelector('.airplane');
 	airplane.style.transform = `rotate(${calculate_deg()}deg)`;
+	if (steering_deg < 0)
+	{
+		steering_deg += 360;
+	}
+	else if (steering_deg > 360)
+	{
+		steering_deg -= 360;
+	}
+	xadd = Math.floor(speed * Math.cos(steering_deg * (Math.PI / 180)));
+	yadd = Math.floor(speed * Math.sin(steering_deg * (Math.PI / 180)));
 }, 100);
 
+let airplane_sound_anim = setInterval(() => {
+	if (speed < 40)
+	{
+		sound.playbackRate = speed / 10;
+		sound.volume = speed / 60;
+	}
+	else
+	{
+		sound.playbackRate = 4;
+	}
+}, 10);
 
 
 let map_gen_anim = setInterval(() => {
