@@ -8,12 +8,23 @@
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
-	<audio autoplay="true" display="hidden" loop="true">
-		<source src="airplane_sound.mp3" type="audio/mp3">
+	<audio autoplay="true" display="hidden" loop="true" class="airplane_sound">
+		<source src="airplane_sound10s.mp3" type="audio/mp3">
 	</audio>
 	<div class="airplane">
-		&#x2708;
+		<img src="fighter_jet.png" width="100px">
 	</div>
+	<div class="fuel_clock">
+	</div>
+	<div class="compass">
+		&#8594;
+	</div>
+	<audio display="hidden" class="tire_screech">
+		<source src="tire_screech_1s.mp3" type="audio/mp3">
+	</audio>
+	<audio display="hidden" class="bomb">
+		<source src="explosion.mp3" type="audio/mp3">
+	</audio>
 	<script src="script.js"></script>
 </body>
 </html>
