@@ -14,6 +14,15 @@ body {
 }
 .container {
 }
+.random_airplane {
+	position: absolute;
+	z-index: 100000;
+	width: 100px;
+	background-image: url(fighter_jet.png);
+	transform-origin: center center;
+	left: 100px;
+	top: 100px;
+}
 .airplane_fire {
 	z-index: -10000;
 	background-image: url(fighter_jet_fire.png);
@@ -36,13 +45,25 @@ body {
 	height: 480px;
 }
 .compass {
-	z-index: 8999;
+	z-index: 9999;
 	position: fixed;
 	width: 50px;
+	height: 50px;
 	font-size: 50px;
 	color: silver;
 	left: calc(50vw - 50px);
 	top: calc(85vh - 50px);
+}
+.radar {
+	z-index: 8999;
+	position: fixed;
+	width: 50px;
+	height: 50px;
+	font-size: 50px;
+	color: red;
+	left: calc(50vw - 50px);
+	top: calc(85vh - 50px);
+	border: 1px solid gray;
 }
 .tire_screech {
 }

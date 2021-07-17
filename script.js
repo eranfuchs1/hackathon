@@ -463,7 +463,7 @@ let check_limits = (coords) => {
 	let roundedx = round_num(coords[0], roundnum);
 	let roundedy = round_num(coords[1], roundnum);
 	//console.log(roundedx, roundedy);
-	for (limit of limits)
+	for (let limit of limits)
 	{
 		if (limit[0] == roundedx && limit[1] == roundedy)
 		{
@@ -472,6 +472,7 @@ let check_limits = (coords) => {
 	}
 	limits.push([roundedx, roundedy]);
 	create_islands(5, 10, 20, [roundedx, roundedy]);
+	spawn_random_airplane([roundedx, roundedy]);
 	//console.log(`new islands ${x} ${y}`);
 	/*
 	if (xadd < 0)
@@ -609,7 +610,7 @@ let airplane_anim = setInterval(() => {
 	let clocks = document.body.querySelector('.fuel_clock');
 	clocks.querySelector('.clock_speed').innerHTML = `<p>speed<br>${speed}</p>`;
 	clocks.querySelector('.clock_fuel').innerHTML = `<p>fuel<br>${jet_fuel}</p>`;
-	clocks.querySelector('.terminal').innerHTML = `<p>inventory ${inventory_string(inventory)}</p>`;
+	clocks.querySelector('.terminal').innerHTML = `<p>inventory ${inventory_string(inventory)}coords[${-x},${-y}]</p>`;
 }, 100);
 
 
@@ -694,6 +695,10 @@ let init_on_airport = () => {
 
 spawn_airport(document.body);
 
+let radar = (airplane_div) => {
+	let comp = Math.atan2(airplane_div[1] + y, airplane_div[0] + x) * 180 / Math.PI;
+	return comp
+};
 
 let compass = () => {
 	let airport = document.querySelector('.airport');
@@ -744,23 +749,29 @@ let bomb_func = (pos) => {
 					{
 						bombed.style.backgroundColor = `gray`;
 					}
-				if (bombed.getAttribute('class') == 'box') //|| bombed.getAttribute('class') == 'box_sand')
+					if (bombed.getAttribute('class') == 'box') //|| bombed.getAttribute('class') == 'box_sand')
 					{
 						let item = bombed.getAttribute('data-collectable-item');
 						if (item == 'fuel' && inventory['fuel'].length < 2000)
 						{
-							inventory['fuel'].push(10);
+							inventory['fuel'].push(100);
 						}
 						else if (item == 'tree' && inventory['trees'].length < 2000)
 						{
 							inventory['trees'].push(bombed);
 						}
 						bombed.remove();
-						break;
+					}
+					else if (bombed.getAttribute('class') == 'random_airplane')
+					{
+						inventory['fuel'].push(10000);
+						bombed.remove();
 					}
 				}
 			}
 		}
+	}, 400);
+	setTimeout(() => {
 		bomb_div.remove();
 	}, 2000);
 };
@@ -775,8 +786,8 @@ let carrier_anim = setInterval(() => {
 	{
 		if (carrier_inventory['jet_fuel'] > 0)
 		{
-			jet_fuel++;
-			carrier_inventory['jet_fuel']--;
+			jet_fuel += 10;
+			carrier_inventory['jet_fuel']-= 10;
 		}
 	}
 }, 100);
@@ -828,3 +839,48 @@ let cockpit_sights_func = () => {
 //let cockpit_sights = setInterval(() => {
 	//cockpit_sights_func();
 //}, 400);
+
+let random_airplanes = [];
+
+
+let spawn_random_airplane = (area) => {
+	let random_deg = Math.floor(Math.random() * 360);
+	let airplane_div = document.createElement('div');
+	let radardiv = document.createElement('div');
+	radardiv.setAttribute('class', 'radar');
+	radardiv.style.transform = `rotate(${radar(airplane_div)}deg)`;
+	radardiv.innerHTML = '&#8594;';
+	airplane_div.setAttribute('class', 'random_airplane');
+	airplane_div.style.color = 'red';
+	airplane_div.style.transform = `rotate(${random_deg}deg)`;
+	airplane_div.style.left = area[0];
+	airplane_div.style.top = area[1];
+	airplane_div.style.width = '100px';
+	airplane_div.style.zIndex = '7000';
+	airplane_div.innerHTML = '<img src="fighter_jet.png" width="100px">';
+	random_airplanes.push({'airplane_div': airplane_div, 'radardiv': radardiv, 'random_deg': random_deg, 'area': area, 'd': 2});
+	document.body.appendChild(airplane_div);
+	document.body.appendChild(radardiv);
+};
+setInterval(() => {
+	for (let airplane_obj of random_airplanes)
+	{
+		let airplane_div = airplane_obj['airplane_div'];
+		let random_deg = airplane_obj['random_deg'];
+		let area = airplane_obj['area'];
+		let d = airplane_obj['d'];
+		let radardiv = airplane_obj['radardiv'];
+		if (!document.body.contains(airplane_div))
+		{
+			radardiv.remove();
+			delete airplane_obj;
+			continue;
+		}
+		area[0] += Math.cos(random_deg * Math.PI / 180) * d;
+		area[1] += Math.sin(random_deg * Math.PI / 180) * d;
+		console.log(area);
+		airplane_div.style.left = `${area[0]}px`;
+		airplane_div.style.top = `${area[1]}px`;
+		radardiv.style.transform = `rotate(${radar(area)}deg)`;
+	}
+}, 1);
