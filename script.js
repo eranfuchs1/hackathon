@@ -438,6 +438,10 @@ document.body.addEventListener('keydown', (e) => {
 	{
 		bomb_func([(window.innerWidth / 2)-x,(window.innerHeight / 2)-y]);
 	}
+	else if (keycode == 65)
+	{
+		photosnap();
+	}
 });
 
 
@@ -516,6 +520,25 @@ let check_limits = (coords) => {
 	}*/
 };
 
+let photosnap = () => {
+	let below = document.elementsFromPoint(window.innerWidth / 2, window.innerHeight / 2);
+	for (let obj of below)
+	{
+		if (obj.getAttribute('data-region'))
+		{
+			let d = 10.0;
+			let j = (window.innerWidth / 2) -x + (Math.cos(steering_deg * Math.PI / 180) * d);
+			let i = (window.innerHeight / 2) -y + (Math.sin(steering_deg * Math.PI / 180) * d);
+			console.log(`steering_deg${steering_deg}`);
+			console.log(`j${j} i${i}`);
+			console.log(`x${x} y${y}`);
+			console.log(obj.style.left, obj.style.top);
+			console.log(obj.style.width, obj.style.height);
+			break;
+		}
+	}
+};
+
 let sound = document.body.querySelector('.airplane_sound');
 sound.mozPreservesPitch = false;
 
@@ -582,7 +605,11 @@ let airplane_anim = setInterval(() => {
 	x -= xadd;
 	y -= yadd; document.body.style.left = `${x}px`;
 	document.body.style.top = `${y}px`;
-	document.body.querySelector('.fuel_clock').innerHTML = `speed: ${speed} coords: [x:${-x}, y:${-y}] fuel: ${jet_fuel} inventory: ${inventory_string(inventory)}`;
+	//document.body.querySelector('.fuel_clock').innerHTML = `speed: ${speed} coords: [x:${-x}, y:${-y}] fuel: ${jet_fuel} inventory: ${inventory_string(inventory)}`;
+	let clocks = document.body.querySelector('.fuel_clock');
+	clocks.querySelector('.clock_speed').innerHTML = `<p>speed<br>${speed}</p>`;
+	clocks.querySelector('.clock_fuel').innerHTML = `<p>fuel<br>${jet_fuel}</p>`;
+	clocks.querySelector('.terminal').innerHTML = `<p>inventory ${inventory_string(inventory)}</p>`;
 }, 100);
 
 
@@ -717,7 +744,7 @@ let bomb_func = (pos) => {
 					{
 						bombed.style.backgroundColor = `gray`;
 					}
-					if (bombed.getAttribute('class') == 'box') //|| bombed.getAttribute('class') == 'box_sand')
+				if (bombed.getAttribute('class') == 'box') //|| bombed.getAttribute('class') == 'box_sand')
 					{
 						let item = bombed.getAttribute('data-collectable-item');
 						if (item == 'fuel' && inventory['fuel'].length < 2000)
@@ -753,3 +780,51 @@ let carrier_anim = setInterval(() => {
 		}
 	}
 }, 100);
+
+let cockpit_sights_func = () => {
+	for (let d = 1; d < 1000; d += 100)
+	{
+		let j = (window.innerWidth / 2)  - x + (Math.cos(steering_deg * Math.PI / 180) * d);
+		let i = (window.innerHeight / 2) - y + (Math.sin(steering_deg * Math.PI / 180) * d);
+		let div = document.createElement('div');
+		div.style.position = 'absolute';
+		div.style.width = '600px';
+		div.style.height = '600px';
+		div.style.left = `${-j-300}px`;
+		div.style.top = `${-i-300}px`;
+		document.body.appendChild(div);
+		let zone = document.querySelectorAll(`[data-region="${round_num(j, rounding)} ${round_num(i, rounding)}"]`);
+		let rect = div.getBoundingClientRect();
+		for (let islands of zone)
+		{
+			if ([...islands.children].some(island => island.getBoundingClientRect().top > div.getBoundingClientRect().top && island.getBoundingClientRect().bottom < div.getBoundingClientRect().bottom && island.getBoundingClientRect().left > div.getBoundingClientRect().left && island.getBoundingClientRect().right < div.getBoundingClientRect().right))
+			{
+				console.log(`land!${[x, y].toString()}`);
+			}
+		}
+		div.remove();
+		/*
+		{
+			let mleft = parseInt(island.style.left.replace(/px$/, ''));
+			let mright = mleft + parseInt(island.style.width.replace(/px$/, ''));
+			let mtop = parseInt(island.style.top.replace(/px$/, ''));
+			let mbottom = mtop + parseInt(island.style.height.replace(/px$/, ''));
+			let mleft = island.offset().left;
+			let mtop = island.offset().top;
+			let mright =  mleft + 300;
+			let mbottom = mtop + 300;
+			if (rect.left >= mleft && rect.left <= mright)
+			{
+				if (rect.top >= mtop && rect.top <= mbottom)
+				{
+					alert(`left: ${mleft}, right: ${mright}, top: ${mtop}, bottom: ${mbottom}, x: ${x}, y:${y}, i: ${i}, j:${j}`);
+					return;
+				}
+			}
+		}*/
+	}
+};
+
+//let cockpit_sights = setInterval(() => {
+	//cockpit_sights_func();
+//}, 400);

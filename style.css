@@ -64,10 +64,48 @@ body {
 	border-radius: 100px;
 }
 .fuel_clock {
+	float: left;
 	z-index: 8999;
 	position: fixed;
 	font-size: 20px;
 	color: black;
-	left: calc(10vw - 50px);
-	top: calc(85vh - 50px);
+	left: calc(50vw - 180px);
+	top: calc(90vh - 50px);
+	width: 100vw;
+	height: 100vh;
+	padding-left: auto;
+	padding-right: auto;
+	background-image: url(jet_cockpit.png);
+	background-repeat: no-repeat, no-repeat;
+	padding-bottom: 200px;
+	margin-top: -200px;
+	overflow: visible;
+}
+.clock {
+	float: left;
+	/*background-color: lightgrey;
+	border: 4px solid grey;
+	border-radius: 100px;*/
+	width: 100px;
+	height: 100px;
+	text-align: center;
+	margin-top: 220px;
+}
+.clock>p {
+	color: lime;
+	padding: 0px;
+	width:80px;
+	margin-left: 60px;
+}
+.terminal {
+	color: lime;
+	float: left;
+	background-color: black;
+	border: 4px solid grey;
+	border-radius: 2px;
+	width: 130px;
+	height: 90px;
+	margin-left: 50px;
+	margin-top: 200px;
+	font-size: 15px;
 }
