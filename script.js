@@ -1,4 +1,3 @@
-let all_islands = [];
 let last_x = 0;
 let last_y = 0;
 let random_airplanes = [];
