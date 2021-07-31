@@ -19,14 +19,10 @@ app.listen(3000, ()=> {
 
 app.get("/api", (req, res, next) => {
 	res.json(data[req.query['xy']]);
-	console.log(req.query['xy']);
-	//console.log(util.inspect(data[req.query['xy']], {showHidden: true, depth: null}));
 	next();
 });
 
 app.post("/api", (req, res, next) => {
 	data[req.body['xy']] = req.body['data'];
-	//console.log(util.inspect(data, {showHidden: true, depth: null}));
-	console.log(req.body['xy'])
 	next();
 });
