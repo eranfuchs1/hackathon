@@ -43,10 +43,6 @@ let store_ns = () => {
 };
 let load_ns = (ns) => {
 	ns = JSON.parse(ns);
-	/*for (let key in ns)
-	{
-		//console.log(`${key} ${ns[key]}`)
-	}*/
 	x = ns['x']
 	y = ns['y']
 	beg = ns.beg
@@ -75,7 +71,6 @@ let spawn_airport = (box) => {
 	let airport = document.createElement('div');
 	airport.setAttribute('class', 'airport');
 	box.appendChild(airport);
-	//console.log(`airport spawned!`);
 };
 
 
@@ -237,7 +232,7 @@ let set_collectable_item = (box) => {
 
 
 let make_half_island = (boxes, div_width, div_height, location) => {
-	let container = {};//document.createElement('div');
+	let container = {};
 	container.tagName = 'div';
 	container.style = {};
 	container.style.width = `${div_width * boxes[0].length}px`;
@@ -255,8 +250,8 @@ let make_half_island = (boxes, div_width, div_height, location) => {
 			{
 				continue;
 			}
-			let div = {};// document.createElement('div');
-			let div_sand = {};// document.createElement('div');
+			let div = {};
+			let div_sand = {};
 			div.tagName = 'div';
 			div_sand.tagName = 'div';
 			div.attributes = {};
@@ -270,7 +265,6 @@ let make_half_island = (boxes, div_width, div_height, location) => {
 			div.attributes['class'] = 'box';
 			div.style.backgroundColor = random_rgba([155,155],[210, 255],[155, 155]);
 			set_collectable_item(div);
-			//div.style.borderRadius = `${random_minmax([3,7])}px`;
 			div.style.position = 'absolute';
 			div_sand.style = {};
 			div_sand.style.position = 'absolute';
@@ -401,10 +395,6 @@ let create_islands = (min, max, number, location) => {
 		let island = make_half_island(boxes, div_width, div_height, location); island.style.position = 'absolute';
 		island.style.left = `${location[0] + Math.ceil(Math.random() * 100 * i)}px`
 		island.style.top = `${location[1] + Math.ceil(Math.random() * 100 * i)}px`
-		if (i == number - 1)
-		{
-			//spawn_airport(island);
-		}
 		document.body.appendChild(parse_json_dom(island));
 		islands.push(island);
 
@@ -447,15 +437,6 @@ for (let island of Array.from(document.body.children).filter(child => {if (child
 
 document.body.addEventListener('keyup', (e) => {
 	let keycode = e.which || e.keyCode;
-	if (keycode == 38)
-	{
-		//store_everything();
-	}
-	if (keycode == 76)
-	{
-		//load_everything();
-		//load_everything_js();
-	}
 	if (keycode == 37 || keycode == 39)//left
 	{
 		steering = 0;
@@ -538,23 +519,9 @@ document.body.addEventListener('keydown', (e) => {
 
 
 let check_limits = (coords) => {
-	/*for (island of document.body.children)
-	{
-		let rect = island.getBoundingClientRect();
-		console.log(rect);
-		if (x + rect.left >= 0 && x + rect.right <= window.innerWidth)
-		{
-			if (y + rect.top >= 0 && y + rect.bottom <= window.innerHeight)
-			{
-				console.log(`no`);
-				return;
-			}
-		}
-	}*/
 	let roundnum = rounding;
 	let roundedx = round_num(coords[0], roundnum);
 	let roundedy = round_num(coords[1], roundnum);
-	//console.log(roundedx, roundedy);
 	for (let limit of limits)
 	{
 		if (limit[0] == roundedx && limit[1] == roundedy)
@@ -568,52 +535,6 @@ let check_limits = (coords) => {
 	{
 		spawn_random_airplane([roundedx, roundedy]);
 	}
-	//console.log(`new islands ${x} ${y}`);
-	/*
-	if (xadd < 0)
-	{
-		if (yadd < 0)
-		{
-			create_islands(10, 15, 40, [roundedx, -roundnum-y-1000]);
-		}
-		else if (yadd > 0)
-		{
-			create_islands(10, 15, 40, [-roundnum-x-1000, roundnum-y-1000]);
-		}
-		else
-		{
-			create_islands(10, 15, 40, [-roundnum-x-1000, -y-1000]);
-		}
-	}
-	else if (xadd > 0)
-	{
-		if (yadd < 0)
-		{
-			create_islands(10, 15, 40, [roundnum-x, -roundnum-y]);
-		}
-		else if (yadd > 0)
-		{
-			create_islands(10, 15, 40, [roundnum-x, roundnum-y]);
-		}
-		else
-		{
-			create_islands(10, 15, 40, [roundnum-x, -y]);
-		}
-	}
-	else {
-		if (yadd < 0)
-		{
-			create_islands(10, 15, 40, [-x, -roundnum-y]);
-		}
-		else if (yadd > 0)
-		{
-			create_islands(10, 15, 40, [-x, roundnum-y]);
-		}
-		else
-		{
-			create_islands(10, 15, 40, [-x, -y]);
-		}
-	}*/
 };
 
 let photosnap = () => {
@@ -625,11 +546,6 @@ let photosnap = () => {
 			let d = 10.0;
 			let j = (window.innerWidth / 2) -x + (Math.cos(steering_deg * Math.PI / 180) * d);
 			let i = (window.innerHeight / 2) -y + (Math.sin(steering_deg * Math.PI / 180) * d);
-			/*console.log(`steering_deg${steering_deg}`);
-			console.log(`j${j} i${i}`);
-			console.log(`x${x} y${y}`);
-			console.log(obj.style.left, obj.style.top);
-			console.log(obj.style.width, obj.style.height);*/
 			break;
 		}
 	}
@@ -643,7 +559,6 @@ let calculate_deg = () => {
 };
 
 let check_landing = () => {
-	//let island = document.querySelector(`[data-region="${round_num(x, rounding)} ${round_num(y, rounding)}"]`);
 	let below = document.elementsFromPoint(window.innerWidth / 2, window.innerHeight / 2);
 	for (let box of below)
 	{
@@ -701,7 +616,6 @@ let airplane_anim = setInterval(() => {
 	x -= xadd;
 	y -= yadd; document.body.style.left = `${x}px`;
 	document.body.style.top = `${y}px`;
-	//document.body.querySelector('.fuel_clock').innerHTML = `speed: ${speed} coords: [x:${-x}, y:${-y}] fuel: ${jet_fuel} inventory: ${inventory_string(inventory)}`;
 	let clocks = document.body.querySelector('.fuel_clock');
 	clocks.querySelector('.clock_speed').innerHTML = `<p>speed<br>${speed}</p>`;
 	clocks.querySelector('.clock_fuel').innerHTML = `<p>fuel<br>${jet_fuel}</p>`;
@@ -710,10 +624,6 @@ let airplane_anim = setInterval(() => {
 
 
 let landing_checker = setInterval(() => {
-	if (check_landing())
-	{
-		//console.log(`can land! coords: [${-x},${-y}]`);
-	}
 	if (landed)
 	{
 		for (let item in inventory)
@@ -771,9 +681,6 @@ let make_sunshine = (hours) => {
 	return 0;
 };
 
-/*let time = new Date();
-console.log(time.getHours());
-document.body.style.backgroundColor = `rgb(10, 10,${Math.floor((make_sunshine(time.getHours()) * (7 / 100)) * 100)})`;*/
 
 hours = hours < 23 ? ++hours : 0;
 document.body.style.backgroundColor = `rgb(10, 70,${50 + Math.floor((make_sunshine(hours) * (200 / 7)))})`;
@@ -838,16 +745,14 @@ let bomb_func = (pos) => {
 		{
 			for (let j = x + pos[0] - 10; j <= x + pos[0] + 10; j += 10)
 			{
-				//console.log(j, i);
 				let below = document.elementsFromPoint(j, i);
-				//console.log(below);
 				for (let bombed of below)
 				{
 					if (bombed.getAttribute('class') == 'box_sand')
 					{
 						bombed.style.backgroundColor = `gray`;
 					}
-					if (bombed.getAttribute('class') == 'box') //|| bombed.getAttribute('class') == 'box_sand')
+					if (bombed.getAttribute('class') == 'box')
 					{
 						let item = bombed.getAttribute('data-collectable-item');
 						if (item == 'fuel' && inventory['fuel'].length < 2000)
@@ -908,35 +813,11 @@ let cockpit_sights_func = () => {
 		{
 			if ([...islands.children].some(island => island.getBoundingClientRect().top > div.getBoundingClientRect().top && island.getBoundingClientRect().bottom < div.getBoundingClientRect().bottom && island.getBoundingClientRect().left > div.getBoundingClientRect().left && island.getBoundingClientRect().right < div.getBoundingClientRect().right))
 			{
-				//console.log(`land!${[x, y].toString()}`);
 			}
 		}
 		div.remove();
-		/*
-		{
-			let mleft = parseInt(island.style.left.replace(/px$/, ''));
-			let mright = mleft + parseInt(island.style.width.replace(/px$/, ''));
-			let mtop = parseInt(island.style.top.replace(/px$/, ''));
-			let mbottom = mtop + parseInt(island.style.height.replace(/px$/, ''));
-			let mleft = island.offset().left;
-			let mtop = island.offset().top;
-			let mright =  mleft + 300;
-			let mbottom = mtop + 300;
-			if (rect.left >= mleft && rect.left <= mright)
-			{
-				if (rect.top >= mtop && rect.top <= mbottom)
-				{
-					alert(`left: ${mleft}, right: ${mright}, top: ${mtop}, bottom: ${mbottom}, x: ${x}, y:${y}, i: ${i}, j:${j}`);
-					return;
-				}
-			}
-		}*/
 	}
 };
-
-//let cockpit_sights = setInterval(() => {
-	//cockpit_sights_func();
-//}, 400);
 
 
 
@@ -989,7 +870,6 @@ setInterval(() => {
 		}
 		area[0] += Math.cos(random_deg * Math.PI / 180) * d;
 		area[1] += Math.sin(random_deg * Math.PI / 180) * d;
-		//console.log(area);
 		airplane_div.style.left = `${area[0]}px`;
 		airplane_div.style.top = `${area[1]}px`;
 		radardiv.style.transform = `rotate(${radar(area)}deg)`;
@@ -1025,7 +905,6 @@ let radar_map = setInterval(() => {
 		dot.style.left = `${100 + loc[0]}px`;
 		dot.style.top = `${100 + loc[1]}px`;
 		document.body.querySelector('.radar_map').appendChild(dot);
-		//console.log(loc);
 	}
 }, 2000);
 
@@ -1051,7 +930,6 @@ let radar_map2 = setInterval(() => {
 		dot.style.left = `${100 + loc[0]}px`;
 		dot.style.top = `${100 + loc[1]}px`;
 		document.body.querySelector('.radar_map').appendChild(dot);
-		//console.log(loc);
 	}
 }, 500);
 
@@ -1076,7 +954,6 @@ let load_island = (data_region) => {
 	xhttp.onreadystatechange = function() {
 		if (this.response)
 		{
-			//console.log(this.response);
 			for (let key in this.response)
 			{
 				let div = parse_json_dom(this.response[key]);
@@ -1092,7 +969,6 @@ let store_island = (island) => {
 	xhttp.open("POST", "http://127.0.0.1:3000/api", true);
 	xhttp.setRequestHeader("Content-Type", "application/json;charset=ASCII");
 	xhttp.send(JSON.stringify({'xy':island[0].attributes['data-region'], 'data':island}));
-	//xhttp.send(JSON.stringify({'xy':island[0].getAttribute('data-region'), 'data':JSON.stringify(island, ["childNodes","data-x", "data-y","data-region","style","id", "className", "tagName"])}));
 };
 let load_everything = () => {
 	let xhttp = new XMLHttpRequest();
@@ -1112,7 +988,6 @@ let load_everything_js = () => {
 			load_ns(decodeURI(atob(this.responseText)));
 		}
 	};
-	//xhttp.open("POST", "ajax_info.php", true);
 	xhttp.send();
 };
 
@@ -1168,6 +1043,5 @@ let hider_anim = setInterval(() => {
 			delete island
 		}
 	}
-	//load_island(`${round_num(x, rounding)} ${round_num(y, rounding)}`);
 	repeater_8(3,3, load_island);
 }, 100);
