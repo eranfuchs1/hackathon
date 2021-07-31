@@ -1,3 +1,7 @@
+let all_islands = [];
+let last_x = 0;
+let last_y = 0;
+let random_airplanes = [];
 let beg = true;
 let yadd = 0;
 let xadd = 0;
@@ -14,6 +18,53 @@ let fire = false;
 let inventory = {'trees':[],'fuel':[]};
 let carrier_inventory = {'trees':[], 'fuel':[], 'jet_fuel':0};
 let jet_fuel = 1000;
+let limits = [];
+let hiddens = [];
+let store_ns = () => {
+	let my_ns = {};
+	my_ns.beg = beg;
+	my_ns.yadd = yadd;
+	my_ns.xadd = xadd;
+	my_ns.x = x;
+	my_ns.y = y;
+	my_ns.hours = hours;
+	my_ns.steering = steering;
+	my_ns.steering_deg = steering_deg;
+	my_ns.speed = speed;
+	my_ns.rounding = rounding;
+	my_ns.landed = landed;
+	my_ns.fire = fire;
+	my_ns.inventory = inventory;
+	my_ns.carrier_inventory = carrier_inventory;
+	my_ns.jet_fuel = jet_fuel;
+	my_ns.limits = limits;
+	my_ns.random_airplanes = random_airplanes;
+	return JSON.stringify(my_ns);
+};
+let load_ns = (ns) => {
+	ns = JSON.parse(ns);
+	/*for (let key in ns)
+	{
+		//console.log(`${key} ${ns[key]}`)
+	}*/
+	x = ns['x']
+	y = ns['y']
+	beg = ns.beg
+	yadd = ns.yadd
+	xadd = ns.xadd
+	hours = ns.hours
+	steering = ns.steering
+	steering_deg = ns.steering_deg
+	speed = ns.speed
+	rounding = ns.rounding
+	landed = ns.landed
+	fire = ns.fire
+	inventory = ns.inventory
+	carrier_inventory = ns.carrier_inventory
+	jet_fuel = ns.jet_fuel
+	limits = ns.limits
+	random_airplanes = ns.random_airplanes
+}
 
 let round_num = (num, round) => {
 	return Math.floor(num / round) * round;
@@ -24,11 +75,10 @@ let spawn_airport = (box) => {
 	let airport = document.createElement('div');
 	airport.setAttribute('class', 'airport');
 	box.appendChild(airport);
-	console.log(`airport spawned!`);
+	//console.log(`airport spawned!`);
 };
 
 
-let limits = [];
 limits.push([0,0]);
 
 
@@ -177,21 +227,26 @@ let set_collectable_item = (box) => {
 	let chance = Math.random();
 	if (chance > 0.7)
 	{
-		box.setAttribute('data-collectable-item', 'fuel');
+		box.attributes['data-collectable-item'] = 'fuel';
 	}
 	else
 	{
-		box.setAttribute('data-collectable-item', 'tree');
+		box.attributes['data-collectable-item'] = 'tree';
 	}
 };
 
 
-let make_half_island = (boxes, div_width, div_height) => {
-	let container = document.createElement('div');
+let make_half_island = (boxes, div_width, div_height, location) => {
+	let container = {};//document.createElement('div');
+	container.tagName = 'div';
+	container.style = {};
 	container.style.width = `${div_width * boxes[0].length}px`;
 	container.style.height = `${div_height * boxes.length}px`;
-	container.setAttribute('data-region', `${round_num(x, rounding)} ${round_num(y, rounding)}`);
+	container.attributes = {};
+	container.attributes['class'] = `container`;
+	container.attributes['data-region'] = `${round_num(location[0], rounding)} ${round_num(location[1], rounding)}`;
 	container.style.position = 'absolute';
+	container.children = [];
 	for (let i of boxes.keys())
 	{
 		for (let j of boxes[i].keys())
@@ -200,30 +255,36 @@ let make_half_island = (boxes, div_width, div_height) => {
 			{
 				continue;
 			}
-			let div = document.createElement('div');
-			let div_sand = document.createElement('div');
-			div.setAttribute('data-x', `${j}`);
-			div.setAttribute('data-y', `${i}`);
+			let div = {};// document.createElement('div');
+			let div_sand = {};// document.createElement('div');
+			div.tagName = 'div';
+			div_sand.tagName = 'div';
+			div.attributes = {};
+			div.attributes['data-x'] = `${j}`;
+			div.attributes['data-y'] = `${i}`;
+			div.style = {};
 			div.style.left = `${j * div_width}px`;
 			div.style.top = `${i * div_height}px`;
 			div.style.width = `${div_width}px`;
 			div.style.height = `${div_height}px`;
-			div.setAttribute('class', 'box');
+			div.attributes['class'] = 'box';
 			div.style.backgroundColor = random_rgba([155,155],[210, 255],[155, 155]);
 			set_collectable_item(div);
 			//div.style.borderRadius = `${random_minmax([3,7])}px`;
 			div.style.position = 'absolute';
+			div_sand.style = {};
 			div_sand.style.position = 'absolute';
 			div_sand.style.left = `${j * div_width}px`;
 			div_sand.style.top = `${i * div_height}px`;
 			div_sand.style.width = `${div_width}px`;
 			div_sand.style.height = `${div_height}px`;
 			div_sand.style.backgroundColor = 'rgb(194, 178, 128)';
-			div_sand.setAttribute('data-x', `${j}`);
-			div_sand.setAttribute('data-y', `${i}`);
-			div_sand.setAttribute('class', `box_sand`);
-			container.appendChild(div_sand);
-			container.appendChild(div);
+			div_sand.attributes = {};
+			div_sand.attributes['data-x'] = `${j}`;
+			div_sand.attributes['data-y'] = `${i}`;
+			div_sand.attributes['class'] = `box_sand`;
+			container.children.push(div_sand);
+			container.children.push(div);
 		}
 	}
 	return container;
@@ -291,7 +352,28 @@ let make_intersections = (boxes, points, direction) => {
 };
 
 
+let parse_json_dom = (json) => {
+	let dom_obj = document.createElement(json.tagName);
+	if ('children' in json)
+	{
+		for (let child of json['children'])
+		{
+			dom_obj.appendChild(parse_json_dom(child));
+		}
+	}
+	for (let key in json.style)
+	{
+		dom_obj.style[key] = json.style[key];
+	}
+	for (let key in json.attributes)
+	{
+		dom_obj.setAttribute(key, json.attributes[key]);
+	}
+	return dom_obj;
+};
+
 let create_islands = (min, max, number, location) => {
+	let islands = [];
 	for (let i of Array(number).keys())
 	{
 		let myWidth;
@@ -316,21 +398,19 @@ let create_islands = (min, max, number, location) => {
 		let div_width = 30;
 		let div_height = 30;
 
-		let island = make_half_island(boxes, div_width, div_height);
-		island.style.position = 'absolute';
+		let island = make_half_island(boxes, div_width, div_height, location); island.style.position = 'absolute';
 		island.style.left = `${location[0] + Math.ceil(Math.random() * 100 * i)}px`
 		island.style.top = `${location[1] + Math.ceil(Math.random() * 100 * i)}px`
 		if (i == number - 1)
 		{
 			//spawn_airport(island);
 		}
-		document.body.appendChild(island);
+		document.body.appendChild(parse_json_dom(island));
+		islands.push(island);
 
 	}
+	return islands;
 };
-//create_islands(30, 40, 40, [-1000,-1000]);
-//create_islands(10, 15, 40, [-1000,-1000]);
-//create_islands(10, 15, 40, [-1000,-1000]);
 
 
 let make_island_solid = (boxes) => {
@@ -367,6 +447,15 @@ for (let island of Array.from(document.body.children).filter(child => {if (child
 
 document.body.addEventListener('keyup', (e) => {
 	let keycode = e.which || e.keyCode;
+	if (keycode == 38)
+	{
+		//store_everything();
+	}
+	if (keycode == 76)
+	{
+		//load_everything();
+		//load_everything_js();
+	}
 	if (keycode == 37 || keycode == 39)//left
 	{
 		steering = 0;
@@ -387,10 +476,10 @@ document.body.addEventListener('keydown', (e) => {
 		}
 		else
 		{
-			--jet_fuel;
+			jet_fuel -= 5;
+			speed += 5
 		}
 		landed = false;
-		speed < speed_limit? ++speed: ++speed;
 		if (!fire)
 		{
 			fire = true;
@@ -401,7 +490,10 @@ document.body.addEventListener('keydown', (e) => {
 	{
 		if (check_landing())
 		{
-			speed > 0? --speed : speed;
+			if (speed - 1 >= 0)
+			{
+				speed -= 1;
+			}
 			if (speed == 0)
 			{
 				let tire_screech = document.body.querySelector('.tire_screech');
@@ -415,7 +507,7 @@ document.body.addEventListener('keydown', (e) => {
 		}
 		else
 		{
-			speed += speed > 6? -1: 0;
+			speed += speed >= 20? -10: 0;
 		}
 	}
 	else if (keycode == 37)//left
@@ -471,8 +563,11 @@ let check_limits = (coords) => {
 		}
 	}
 	limits.push([roundedx, roundedy]);
-	create_islands(5, 10, 20, [roundedx, roundedy]);
-	spawn_random_airplane([roundedx, roundedy]);
+	store_island(create_islands(5, 10, 5, [roundedx, roundedy]));
+	for (let i of Array(1))
+	{
+		spawn_random_airplane([roundedx, roundedy]);
+	}
 	//console.log(`new islands ${x} ${y}`);
 	/*
 	if (xadd < 0)
@@ -530,11 +625,11 @@ let photosnap = () => {
 			let d = 10.0;
 			let j = (window.innerWidth / 2) -x + (Math.cos(steering_deg * Math.PI / 180) * d);
 			let i = (window.innerHeight / 2) -y + (Math.sin(steering_deg * Math.PI / 180) * d);
-			console.log(`steering_deg${steering_deg}`);
+			/*console.log(`steering_deg${steering_deg}`);
 			console.log(`j${j} i${i}`);
 			console.log(`x${x} y${y}`);
 			console.log(obj.style.left, obj.style.top);
-			console.log(obj.style.width, obj.style.height);
+			console.log(obj.style.width, obj.style.height);*/
 			break;
 		}
 	}
@@ -647,11 +742,14 @@ let airplane_sound_anim = setInterval(() => {
 
 
 let map_gen_anim = setInterval(() => {
-	check_limits([-x, -y]);
-	check_limits([rounding-x, -y]);
-	check_limits([-x, rounding-y]);
-	check_limits([rounding -x, rounding-y]);
-}, 1000);
+	for (let i = -2; i <= 2; i++)
+	{
+		for (let j = -2; j <= 2; j++)
+		{
+			check_limits([-x + (j * rounding), -y + (i * rounding)]);
+		}
+	}
+}, 100);
 
 let make_sunshine = (hours) => {
 	if (hours < 5)
@@ -696,7 +794,7 @@ let init_on_airport = () => {
 spawn_airport(document.body);
 
 let radar = (airplane_div) => {
-	let comp = Math.atan2(airplane_div[1] + y, airplane_div[0] + x) * 180 / Math.PI;
+	let comp = Math.atan2(airplane_div[1] + ( - window.innerHeight / 2) + y, airplane_div[0] + ( - window.innerWidth / 2) + x) * 180 / Math.PI;
 	return comp
 };
 
@@ -740,9 +838,9 @@ let bomb_func = (pos) => {
 		{
 			for (let j = x + pos[0] - 10; j <= x + pos[0] + 10; j += 10)
 			{
-				console.log(j, i);
+				//console.log(j, i);
 				let below = document.elementsFromPoint(j, i);
-				console.log(below);
+				//console.log(below);
 				for (let bombed of below)
 				{
 					if (bombed.getAttribute('class') == 'box_sand')
@@ -786,8 +884,8 @@ let carrier_anim = setInterval(() => {
 	{
 		if (carrier_inventory['jet_fuel'] > 0)
 		{
-			jet_fuel += 10;
-			carrier_inventory['jet_fuel']-= 10;
+			jet_fuel += 100;
+			carrier_inventory['jet_fuel']-= 100;
 		}
 	}
 }, 100);
@@ -810,7 +908,7 @@ let cockpit_sights_func = () => {
 		{
 			if ([...islands.children].some(island => island.getBoundingClientRect().top > div.getBoundingClientRect().top && island.getBoundingClientRect().bottom < div.getBoundingClientRect().bottom && island.getBoundingClientRect().left > div.getBoundingClientRect().left && island.getBoundingClientRect().right < div.getBoundingClientRect().right))
 			{
-				console.log(`land!${[x, y].toString()}`);
+				//console.log(`land!${[x, y].toString()}`);
 			}
 		}
 		div.remove();
@@ -840,14 +938,18 @@ let cockpit_sights_func = () => {
 	//cockpit_sights_func();
 //}, 400);
 
-let random_airplanes = [];
 
 
 let spawn_random_airplane = (area) => {
+	if (random_airplanes.length > 5)
+	{
+		return;
+	}
 	let random_deg = Math.floor(Math.random() * 360);
 	let airplane_div = document.createElement('div');
 	let radardiv = document.createElement('div');
 	radardiv.setAttribute('class', 'radar');
+	radardiv.setAttribute('id', `radar${random_airplanes.length}`);
 	radardiv.style.transform = `rotate(${radar(airplane_div)}deg)`;
 	radardiv.innerHTML = '&#8594;';
 	airplane_div.setAttribute('class', 'random_airplane');
@@ -858,29 +960,214 @@ let spawn_random_airplane = (area) => {
 	airplane_div.style.width = '100px';
 	airplane_div.style.zIndex = '7000';
 	airplane_div.innerHTML = '<img src="fighter_jet.png" width="100px">';
-	random_airplanes.push({'airplane_div': airplane_div, 'radardiv': radardiv, 'random_deg': random_deg, 'area': area, 'd': 2});
+	airplane_div.setAttribute('id', `airplane${random_airplanes.length}`)
 	document.body.appendChild(airplane_div);
 	document.body.appendChild(radardiv);
+	random_airplanes.push({'airplane_div': airplane_div.getAttribute('id'), 'radardiv': radardiv.getAttribute('id'), 'random_deg': random_deg, 'area': area, 'd': 45});
 };
 setInterval(() => {
-	for (let airplane_obj of random_airplanes)
+	for (let i of random_airplanes.keys())
 	{
-		let airplane_div = airplane_obj['airplane_div'];
+		if (!random_airplanes[i])
+		{
+			random_airplanes.pop(i);
+		}
+	}
+	for (let i of random_airplanes.keys())
+	{
+		let airplane_obj = random_airplanes[i];
+		let airplane_div = document.getElementById(airplane_obj['airplane_div']);
 		let random_deg = airplane_obj['random_deg'];
 		let area = airplane_obj['area'];
 		let d = airplane_obj['d'];
-		let radardiv = airplane_obj['radardiv'];
+		let radardiv = document.getElementById(airplane_obj['radardiv']);
 		if (!document.body.contains(airplane_div))
 		{
 			radardiv.remove();
-			delete airplane_obj;
+			delete random_airplanes[i];
 			continue;
 		}
 		area[0] += Math.cos(random_deg * Math.PI / 180) * d;
 		area[1] += Math.sin(random_deg * Math.PI / 180) * d;
-		console.log(area);
+		//console.log(area);
 		airplane_div.style.left = `${area[0]}px`;
 		airplane_div.style.top = `${area[1]}px`;
 		radardiv.style.transform = `rotate(${radar(area)}deg)`;
+		if (round_num(-x, rounding) == round_num(area[0], rounding) && round_num(-y, rounding) == round_num(area[1], rounding))
+		{
+			radardiv.style.visibility = 'visible';
+		}
+		else
+		{
+			radardiv.style.visibility = 'hidden';
+		}
 	}
-}, 1);
+}, 100);
+
+let radar_map = setInterval(() => {
+	let locations = [];
+	for (let div of document.body.querySelectorAll('.container'))
+	{
+		locations.push([Math.ceil((parseInt(div.style.left.replace(/px/, '')) + x)/ (rounding / 10)), Math.ceil((parseInt(div.style.top.replace(/px/, '')) + y) / (rounding/ 10))])
+	}
+	for (let div of document.body.querySelector('.radar_map').children)
+	{
+		div.remove();
+		delete div;
+	}
+	for (let loc of locations)
+	{
+		let dot = document.createElement('div');
+		dot.style.position = 'absolute';
+		dot.style.width = '1px';
+		dot.style.height = '1px';
+		dot.style.backgroundColor = 'yellow';
+		dot.style.left = `${100 + loc[0]}px`;
+		dot.style.top = `${100 + loc[1]}px`;
+		document.body.querySelector('.radar_map').appendChild(dot);
+		//console.log(loc);
+	}
+}, 2000);
+
+let radar_map2 = setInterval(() => {
+	let locations = [];
+	for (let div of document.body.querySelectorAll('.random_airplane'))
+	{
+		locations.push([Math.ceil((parseInt(div.style.left.replace(/px/, '')) + x) / (rounding / 10)), Math.ceil((parseInt(div.style.top.replace(/px/, '')) + y) / (rounding/ 10))])
+	}
+	for (let div of document.body.querySelector('.random_airplane').children)
+	{
+		div.remove();
+		delete div;
+	}
+	for (let loc of locations)
+	{
+		let dot = document.createElement('div');
+		dot.style.position = 'absolute';
+		dot.style.width = '4px';
+		dot.style.height = '4px';
+		dot.style.backgroundColor = 'red';
+		dot.style.zIndex = '100';
+		dot.style.left = `${100 + loc[0]}px`;
+		dot.style.top = `${100 + loc[1]}px`;
+		document.body.querySelector('.radar_map').appendChild(dot);
+		//console.log(loc);
+	}
+}, 500);
+
+
+let store_limit = (limit) => {
+	let html = '';
+	for (let island of document.querySelectorAll(`[data-region*="${limit[0]} ${limit[1]}"]`))
+	{
+		html += island.outerHTML;
+	}
+	return html
+};
+let store_everything = () => {
+	let xhttp = new XMLHttpRequest();
+	xhttp.open("POST", "ajax_info.php", true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send(`html=${btoa(encodeURI(document.body.innerHTML))}&js_namespace=${btoa(encodeURI(store_ns()))}`);
+};
+let load_island = (data_region) => {
+	let xhttp = new XMLHttpRequest();
+	xhttp.responseType = 'json';
+	xhttp.onreadystatechange = function() {
+		if (this.response)
+		{
+			//console.log(this.response);
+			for (let key in this.response)
+			{
+				let div = parse_json_dom(this.response[key]);
+				document.body.appendChild(div);
+			}
+		}
+	};
+	xhttp.open("GET", `http://127.0.0.1:3000/api?xy=${encodeURI(data_region)}`, true);
+	xhttp.send();
+};
+let store_island = (island) => {
+	let xhttp = new XMLHttpRequest();
+	xhttp.open("POST", "http://127.0.0.1:3000/api", true);
+	xhttp.setRequestHeader("Content-Type", "application/json;charset=ASCII");
+	xhttp.send(JSON.stringify({'xy':island[0].attributes['data-region'], 'data':island}));
+	//xhttp.send(JSON.stringify({'xy':island[0].getAttribute('data-region'), 'data':JSON.stringify(island, ["childNodes","data-x", "data-y","data-region","style","id", "className", "tagName"])}));
+};
+let load_everything = () => {
+	let xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			document.body.innerHTML = decodeURI(atob(this.responseText));
+		}
+	};
+	xhttp.open("POST", "ajax_info.php", true);
+	xhttp.send();
+};
+let load_everything_js = () => {
+	let xhttp = new XMLHttpRequest();
+	xhttp.open("GET", "ajax_info.php?js=true", true);
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			load_ns(decodeURI(atob(this.responseText)));
+		}
+	};
+	//xhttp.open("POST", "ajax_info.php", true);
+	xhttp.send();
+};
+
+let hider_func = (j, k) => {
+	for (let i of hiddens.keys())
+	{
+		let island = hiddens[i];
+		if (!island.hasAttribute('data-region'))
+		{
+			continue;
+		}
+		if (island.getAttribute('data-region') == `${round_num(x, rounding) + j} ${round_num(y, rounding) + k}`)
+		{
+			document.body.appendChild(hiddens.pop(i));
+		}
+	}
+};
+
+
+let repeater_8 = (xremote,yremote,callback) => {
+	for (let i = -yremote; i <= yremote; i++)
+	{
+		for (let j = -xremote; j <= xremote; j++)
+		{
+			callback(`${round_num(x, rounding) + j * rounding} ${round_num(y, rounding) + i * rounding}`);
+		}
+	}
+};
+
+let hider_anim = setInterval(() => {
+	if (last_x == round_num(x, rounding) && last_y == round_num(y, rounding))
+	{
+		return;
+	}
+	last_x = round_num(x, rounding);
+	last_y = round_num(y, rounding);
+	for (let island of document.body.children)
+	{
+		if (!island.hasAttribute('data-region'))
+		{
+			continue;
+		}
+		let xy = island.getAttribute('data-region').split(' ');
+		let xy_x = parseInt(xy[0]);
+		let xy_y = parseInt(xy[1]);
+		let max_x = round_num(x + 2 * rounding, rounding);
+		let max_y = round_num(y + 2 * rounding, rounding);
+		let min_x = round_num(x - 2 * rounding, rounding);
+		let min_y = round_num(y - 2 * rounding, rounding);
+		if (xy_x > max_x || xy_x < min_x || xy_y > max_y || xy_y < min_y)
+		{
+			island.remove();
+			delete island
+		}
+	}
+	//load_island(`${round_num(x, rounding)} ${round_num(y, rounding)}`);
+	repeater_8(3,3, load_island);
+}, 100);

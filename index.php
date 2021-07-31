@@ -1,0 +1,44 @@
+<?php
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: *");
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="ASCII">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<audio autoplay="true" display="hidden" loop="true" class="airplane_sound">
+		<source src="airplane_sound10s.mp3" type="audio/mp3">
+	</audio>
+	<div class="airplane">
+		<img src="fighter_jet.png" width="100px">
+	</div>
+	<div class="fuel_clock">
+		<div class="clock clock_speed">
+		</div>
+		<div class="clock clock_fuel">
+		</div>
+		<div class="clock_coords">
+		</div>
+		<div class="terminal">
+		</div>
+	</div>
+	<div class="compass">
+		&#8594;
+	</div>
+	<audio display="hidden" class="tire_screech">
+		<source src="tire_screech_1s.mp3" type="audio/mp3">
+	</audio>
+	<audio display="hidden" class="bomb">
+		<source src="explosion.mp3" type="audio/mp3">
+	</audio>
+	<div class="radar_map">
+	</div>
+	<script src="script.js"></script>
+</body>
+</html>
