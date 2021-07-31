@@ -77,36 +77,6 @@ let spawn_airport = (box) => {
 limits.push([0,0]);
 
 
-let round_island = (boxes, width, height) => {
-	boxes_flags = create_boxes(width, height);
-	for (let box of boxes)
-	{
-		boxes_flags[parseInt(box.getAttribute('data-y'))][parseInt(box.getAttribute('data-x'))] = {'on': true, 'box': box};
-	}
-	let beg = true;
-	for (let line of boxes_flags)
-	{
-		let fl_indices = [-1, -1];
-		for (let j of line.keys())
-		{
-			if (typeof(line[j]) == typeof({'is object':'?'}))
-			{
-				if (beg)
-				{
-					fl_indices[0] = j;
-					beg = false;
-				}
-				fl_indices[1] = j;
-			}
-		}
-		if (fl_indices[0] == -1 || fl_indices[1] == -1)
-		{
-			continue;
-		}
-		line[fl_indices[0]]['box'].style.borderRadius = `15px 0px 0px 0px`;
-		line[fl_indices[1]]['box'].style.borderRadius = `0px 15px 0px 0px`;
-	}
-};
 let random_minmax = (minmax) => {
 	return Math.floor((Math.random() * (minmax[1] - minmax[0])) + minmax[0]);
 };
@@ -430,10 +400,6 @@ let make_island_solid = (boxes) => {
 };
 
 
-for (let island of Array.from(document.body.children).filter(child => {if (child.tagName == 'div') {return child}}))
-{
-	round_island(island.children, 30, 30);
-}
 
 document.body.addEventListener('keyup', (e) => {
 	let keycode = e.which || e.keyCode;
