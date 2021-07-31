@@ -795,30 +795,6 @@ let carrier_anim = setInterval(() => {
 	}
 }, 100);
 
-let cockpit_sights_func = () => {
-	for (let d = 1; d < 1000; d += 100)
-	{
-		let j = (window.innerWidth / 2)  - x + (Math.cos(steering_deg * Math.PI / 180) * d);
-		let i = (window.innerHeight / 2) - y + (Math.sin(steering_deg * Math.PI / 180) * d);
-		let div = document.createElement('div');
-		div.style.position = 'absolute';
-		div.style.width = '600px';
-		div.style.height = '600px';
-		div.style.left = `${-j-300}px`;
-		div.style.top = `${-i-300}px`;
-		document.body.appendChild(div);
-		let zone = document.querySelectorAll(`[data-region="${round_num(j, rounding)} ${round_num(i, rounding)}"]`);
-		let rect = div.getBoundingClientRect();
-		for (let islands of zone)
-		{
-			if ([...islands.children].some(island => island.getBoundingClientRect().top > div.getBoundingClientRect().top && island.getBoundingClientRect().bottom < div.getBoundingClientRect().bottom && island.getBoundingClientRect().left > div.getBoundingClientRect().left && island.getBoundingClientRect().right < div.getBoundingClientRect().right))
-			{
-			}
-		}
-		div.remove();
-	}
-};
-
 
 
 let spawn_random_airplane = (area) => {
