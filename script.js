@@ -965,6 +965,8 @@ let hider_anim = setInterval(() => {
 	}
 	last_x = round_num(x, rounding);
 	last_y = round_num(y, rounding);
+
+	let xy_adder = 3;
 	for (let island of document.body.children)
 	{
 		if (!island.hasAttribute('data-region'))
@@ -974,15 +976,15 @@ let hider_anim = setInterval(() => {
 		let xy = island.getAttribute('data-region').split(' ');
 		let xy_x = parseInt(xy[0]);
 		let xy_y = parseInt(xy[1]);
-		let max_x = round_num(x + 2 * rounding, rounding);
-		let max_y = round_num(y + 2 * rounding, rounding);
-		let min_x = round_num(x - 2 * rounding, rounding);
-		let min_y = round_num(y - 2 * rounding, rounding);
+		let max_x = round_num(x + xy_adder * rounding, rounding);
+		let max_y = round_num(y + xy_adder * rounding, rounding);
+		let min_x = round_num(x - xy_adder * rounding, rounding);
+		let min_y = round_num(y - xy_adder * rounding, rounding);
 		if (xy_x > max_x || xy_x < min_x || xy_y > max_y || xy_y < min_y)
 		{
 			island.remove();
 			delete island
 		}
 	}
-	repeater_8(3,3, load_island);
+	repeater_8(xy_adder,xy_adder, load_island);
 }, 100);
