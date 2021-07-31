@@ -1,4 +1,3 @@
-let util = require('util');
 let express = require('express');
 let app = express();
 let data = {};
