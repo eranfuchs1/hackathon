@@ -220,6 +220,7 @@ let make_half_island = (boxes, div_width, div_height, location) => {
 	container.style = {};
 	container.style.width = `${div_width * boxes[0].length}px`;
 	container.style.height = `${div_height * boxes.length}px`;
+	container.style.backgroundColor = '';
 	container.attributes = {};
 	container.attributes['class'] = `container`;
 	container.attributes['data-region'] = `${round_num(location[0], rounding)} ${round_num(location[1], rounding)}`;
