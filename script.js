@@ -1,3 +1,4 @@
+let divs_arr_index = 0;
 let divs_arr = [];
 let last_x = 0;
 let last_y = 0;
