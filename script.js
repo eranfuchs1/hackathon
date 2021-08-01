@@ -1,3 +1,4 @@
+let divs_arr = [];
 let last_x = 0;
 let last_y = 0;
 let random_airplanes = [];
@@ -988,3 +989,9 @@ let hider_anim = setInterval(() => {
 	}
 	repeater_8(xy_adder,xy_adder, load_island);
 }, 100);
+let init_divs_arr = () => {
+	for (let i = 0; i < 1000; i++)
+	{
+		divs_arr.push(document.createElement('div'));
+	}
+};
