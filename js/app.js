@@ -11,7 +11,7 @@ app.all('/api', function(req, res, next) {
 	next()
 });
 
-app.listen(3000, ()=> {
+app.listen(6000, ()=> {
 	console.log('app');
 });
 

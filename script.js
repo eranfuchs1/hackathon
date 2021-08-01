@@ -1,11 +1,12 @@
 let init_divs_arr = () => {
-	for (let i = 0; i < 1000; i++)
+	for (let i = 0; i < 3000; i++)
 	{
 		divs_arr.push(document.createElement('div'));
 	}
 };
 let divs_arr_index = 0;
 let divs_arr = [];
+init_divs_arr();
 let last_x = 0;
 let last_y = 0;
 let random_airplanes = [];
@@ -923,12 +924,12 @@ let load_island = (data_region) => {
 			}
 		}
 	};
-	xhttp.open("GET", `http://127.0.0.1:3000/api?xy=${encodeURI(data_region)}`, true);
+	xhttp.open("GET", `http://127.0.0.1:6000/api?xy=${encodeURI(data_region)}`, true);
 	xhttp.send();
 };
 let store_island = (island) => {
 	let xhttp = new XMLHttpRequest();
-	xhttp.open("POST", "http://127.0.0.1:3000/api", true);
+	xhttp.open("POST", "http://127.0.0.1:6000/api", true);
 	xhttp.setRequestHeader("Content-Type", "application/json;charset=ASCII");
 	xhttp.send(JSON.stringify({'xy':island[0].attributes['data-region'], 'data':island}));
 };
