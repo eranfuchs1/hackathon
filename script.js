@@ -1,3 +1,9 @@
+let init_divs_arr = () => {
+	for (let i = 0; i < 1000; i++)
+	{
+		divs_arr.push(document.createElement('div'));
+	}
+};
 let divs_arr_index = 0;
 let divs_arr = [];
 let last_x = 0;
@@ -1003,9 +1009,3 @@ let hider_anim = setInterval(() => {
 	}
 	repeater_8(xy_adder,xy_adder, load_island);
 }, 100);
-let init_divs_arr = () => {
-	for (let i = 0; i < 1000; i++)
-	{
-		divs_arr.push(document.createElement('div'));
-	}
-};
