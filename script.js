@@ -889,7 +889,7 @@ let store_everything = () => {
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send(`html=${btoa(encodeURI(document.body.innerHTML))}&js_namespace=${btoa(encodeURI(store_ns()))}`);
 };
-let load_island = async (data_region) => {
+let load_island = (data_region) => {
 	let xhttp = new XMLHttpRequest();
 	xhttp.responseType = 'json';
 	xhttp.onreadystatechange = function() {
