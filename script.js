@@ -1,5 +1,5 @@
 let init_divs_arr = () => {
-	for (let i = 0; i < 3000; i++)
+	for (let i = 0; i < 6000; i++)
 	{
 		divs_arr.push(document.createElement('div'));
 	}
