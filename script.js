@@ -323,7 +323,15 @@ let make_intersections = (boxes, points, direction) => {
 
 
 let parse_json_dom = (json) => {
-	let dom_obj = document.createElement(json.tagName);
+	let dom_obj = null;
+	if (json.tagName == 'div')
+	{
+		dom_obj = divs_arr[divs_arr_index_get()];
+	}
+	else
+	{
+		dom_obj = document.createElement(json.tagName);
+	}
 	if ('children' in json)
 	{
 		for (let child of json['children'])
