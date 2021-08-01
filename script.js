@@ -42,6 +42,11 @@ let store_ns = () => {
 	my_ns.random_airplanes = random_airplanes;
 	return JSON.stringify(my_ns);
 };
+let divs_arr_index_get = () => {
+	let answer = divs_arr_index;
+	divs_arr_index = (divs_arr_index + 1) % divs_arr.length;
+	return answer;
+};
 let load_ns = (ns) => {
 	ns = JSON.parse(ns);
 	x = ns['x']
