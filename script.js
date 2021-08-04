@@ -912,17 +912,25 @@ let store_everything = () => {
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send(`html=${btoa(encodeURI(document.body.innerHTML))}&js_namespace=${btoa(encodeURI(store_ns()))}`);
 };
+let areas_exist = {};
 let load_island = (data_region) => {
 	let xhttp = new XMLHttpRequest();
 	xhttp.responseType = 'json';
 	xhttp.onreadystatechange = function() {
 		if (this.response)
 		{
+			let next_areas_exist = {};
 			for (let key in this.response)
 			{
+				if (key in areas_exist)
+				{
+					continue;
+				}
+				next_areas_exist[key] = true;
 				let div = parse_json_dom(this.response[key]);
 				document.body.appendChild(div);
 			}
+			areas_exist = next_areas_exist;
 		}
 	};
 	xhttp.open("GET", `http://127.0.0.1:6000/api?xy=${encodeURI(data_region)}`, true);
