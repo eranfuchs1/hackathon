@@ -852,7 +852,7 @@ let radar_map = setInterval(() => {
 	let locations = [];
 	for (let div of document.body.querySelectorAll('.container'))
 	{
-		locations.push([Math.ceil((parseInt(div.style.left.replace(/px/, '')) + x)/ (rounding / 10)), Math.ceil((parseInt(div.style.top.replace(/px/, '')) + y) / (rounding/ 10))])
+		locations.push([Math.ceil((parseInt(div.style.left.replace(/px/, '')) + x)/ (rounding / 6)), Math.ceil((parseInt(div.style.top.replace(/px/, '')) + y) / (rounding/ 6))])
 	}
 	for (let div of document.body.querySelector('.radar_map').children)
 	{
@@ -876,7 +876,7 @@ let radar_map2 = setInterval(() => {
 	let locations = [];
 	for (let div of document.body.querySelectorAll('.random_airplane'))
 	{
-		locations.push([Math.ceil((parseInt(div.style.left.replace(/px/, '')) + x) / (rounding / 10)), Math.ceil((parseInt(div.style.top.replace(/px/, '')) + y) / (rounding/ 10))])
+		locations.push([Math.ceil((parseInt(div.style.left.replace(/px/, '')) + x) / (rounding / 6)), Math.ceil((parseInt(div.style.top.replace(/px/, '')) + y) / (rounding/ 6))])
 	}
 	for (let div of document.body.querySelector('.random_airplane').children)
 	{
