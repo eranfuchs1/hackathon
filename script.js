@@ -608,7 +608,7 @@ let airplane_anim = setInterval(() => {
 	clocks.querySelector('.clock_speed').innerHTML = `<p>speed<br>${speed}</p>`;
 	clocks.querySelector('.clock_fuel').innerHTML = `<p>fuel<br>${jet_fuel}</p>`;
 	clocks.querySelector('.terminal').innerHTML = `<p>inventory ${inventory_string(inventory)}coords[${-x},${-y}]</p>`;
-}, 100);
+}, 50);
 
 
 let landing_checker = setInterval(() => {
