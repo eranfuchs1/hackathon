@@ -137,4 +137,5 @@ body {
 	width: 200px;
 	height: 200px;
 	background-color: rgba(100,100,100,0.3);
+	overflow: hidden;
 }
