@@ -870,7 +870,7 @@ let radar_map = setInterval(() => {
 		dot.style.top = `${100 + loc[1]}px`;
 		document.body.querySelector('.radar_map').appendChild(dot);
 	}
-}, 2000);
+}, 100);
 
 let radar_map2 = setInterval(() => {
 	let locations = [];
@@ -895,7 +895,7 @@ let radar_map2 = setInterval(() => {
 		dot.style.top = `${100 + loc[1]}px`;
 		document.body.querySelector('.radar_map').appendChild(dot);
 	}
-}, 500);
+}, 100);
 
 
 let store_limit = (limit) => {
