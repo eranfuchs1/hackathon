@@ -4,6 +4,10 @@ let init_divs_arr = () => {
 		divs_arr.push(document.createElement('div'));
 	}
 };
+let left_key = false;
+let right_key = false;
+let up_key = false;
+let down_key = false;
 let divs_arr_index = 0;
 let divs_arr = [];
 init_divs_arr();
@@ -425,75 +429,44 @@ let make_island_solid = (boxes) => {
 
 document.body.addEventListener('keyup', (e) => {
 	let keycode = e.which || e.keyCode;
-	if (keycode == 37 || keycode == 39)//left
+	if (keycode == 37)
+	{
+		left_key = false;
+	}
+	if (keycode == 39)
+	{
+		right_key = false;
+	}
+	if (keycode == 37 || keycode == 39)//left or right
 	{
 		steering = 0;
 	}
 	if (keycode == 38)//up
 	{
-		document.body.querySelector('.airplane').children[0].setAttribute('src', 'fighter_jet.png');
-		fire = false;
+		up_key = false;
+	}
+	if (keycode == 40)//down
+	{
+		down_key = false;
 	}
 });
 document.body.addEventListener('keydown', (e) => {
 	let keycode = e.which || e.keyCode;
 	if (keycode == 38)//up
 	{
-		if (jet_fuel <= 0)
-		{
-			return;
-		}
-		else
-		{
-			jet_fuel -= 5;
-			speed += 5
-		}
-		landed = false;
-		if (!fire)
-		{
-			fire = true;
-		}
-		document.body.querySelector('.airplane').children[0].setAttribute('src', 'fighter_jet_fire.png');
+		up_key = true;
 	}
 	else if (keycode == 40)//down
 	{
-		if (check_landing())
-		{
-			if (speed - 1 >= 0)
-			{
-				speed -= 1;
-			}
-			if (speed == 0)
-			{
-				let tire_screech = document.body.querySelector('.tire_screech');
-				if (!landed)
-				{
-					tire_screech.play();
-					tire_screech.autoplay = false;
-					landed = true;
-				}
-			}
-		}
-		else
-		{
-			speed += speed >= 20? -10: 0;
-		}
+		down_key = true;
 	}
 	else if (keycode == 37)//left
 	{
-		if (steering > -2)
-		{
-			steering -= 0.5;
-		}
-		steering_deg += steering;
+		left_key = true;
 	}
 	else if (keycode == 39)//right
 	{
-		if (steering < 2)
-		{
-			steering += 0.5;
-		}
-		steering_deg += steering;
+		right_key = true;
 	}
 	else if (keycode == 32)
 	{
@@ -891,12 +864,47 @@ let radar_map2 = setInterval(() => {
 		dot.style.height = '4px';
 		dot.style.backgroundColor = 'red';
 		dot.style.zIndex = '100';
-		dot.style.left = `${100 + loc[0]}px`;
-		dot.style.top = `${100 + loc[1]}px`;
+		dot.style.left = `${98 + loc[0]}px`;
+		dot.style.top = `${98 + loc[1]}px`;
 		document.body.querySelector('.radar_map').appendChild(dot);
 	}
 }, 100);
 
+let radar_map_jet = setInterval(() => {
+	let loc = [0, -100];
+	let dot = document.createElement('div');
+	dot.style.position = 'absolute';
+	dot.style.width = '2px';
+	dot.style.height = '200px';
+	dot.style.backgroundColor = 'green';
+	dot.style.zIndex = '100';
+	dot.style.left = `${99 + loc[0]}px`;
+	dot.style.top = `${99 + loc[1]}px`;
+	loc = [-100, 0];
+	document.body.querySelector('.radar_map').appendChild(dot);
+	dot = document.createElement('div');
+	dot.style.position = 'absolute';
+	dot.style.width = '200px';
+	dot.style.height = '2px';
+	dot.style.backgroundColor = 'green';
+	dot.style.zIndex = '100';
+	dot.style.left = `${99 + loc[0]}px`;
+	dot.style.top = `${99 + loc[1]}px`;
+	document.body.querySelector('.radar_map').appendChild(dot);
+}, 100);
+
+let radar_map_carrier = setInterval(() => {
+	let loc = [Math.ceil((x) / (rounding / 6)), Math.ceil((y) / (rounding/ 6))]
+	let dot = document.createElement('div');
+	dot.style.position = 'absolute';
+	dot.style.width = '6px';
+	dot.style.height = '6px';
+	dot.style.backgroundColor = 'white';
+	dot.style.zIndex = '100';
+	dot.style.left = `${97 + loc[0]}px`;
+	dot.style.top = `${97 + loc[1]}px`;
+	document.body.querySelector('.radar_map').appendChild(dot);
+}, 100);
 
 let store_limit = (limit) => {
 	let html = '';
@@ -988,6 +996,68 @@ let repeater_8 = (xremote,yremote,callback) => {
 		}
 	}
 };
+
+let arrow_keys_loop = setInterval(() => {
+	if (left_key) {
+		if (steering > -6)
+		{
+			steering -= 1.5;
+		}
+		steering_deg += steering;
+	}
+	if (right_key) {
+		if (steering < 6)
+		{
+			steering += 1.5;
+		}
+		steering_deg += steering;
+	}
+	if (up_key) {
+		if (jet_fuel <= 0)
+		{
+			return;
+		}
+		else
+		{
+			jet_fuel -= 5;
+			speed += 5
+		}
+		landed = false;
+		if (!fire)
+		{
+			fire = true;
+		}
+		document.body.querySelector('.airplane').children[0].setAttribute('src', 'fighter_jet_fire.png');
+	}
+	else {
+		document.body.querySelector('.airplane').children[0].setAttribute('src', 'fighter_jet.png');
+		fire = false;
+	}
+	if (down_key) {
+		if (check_landing())
+		{
+			if (speed - 1 >= 0)
+			{
+				speed -= 1;
+			}
+			if (speed == 0)
+			{
+				let tire_screech = document.body.querySelector('.tire_screech');
+				if (!landed)
+				{
+					tire_screech.play();
+					tire_screech.autoplay = false;
+					landed = true;
+				}
+			}
+		}
+		else
+		{
+			speed += speed >= 20? -10: 0;
+		}
+	}
+}, 50);
+
 
 let hider_anim = setInterval(() => {
 	if (last_x == round_num(x, rounding) && last_y == round_num(y, rounding))
