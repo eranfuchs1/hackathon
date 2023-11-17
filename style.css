@@ -134,9 +134,17 @@ body {
 	position: fixed;
 	right: 0px;
 	bottom: 0px;
-	width: 200px;
-	height: 200px;
+	width: 400px;
+	height: 400px;
 	background-color: rgba(100,100,100,0.3);
 	overflow: hidden;
 	z-index: 100000;
+}
+
+.bullet_projectile {
+	position: absolute;
+	background-color: orange;
+	width: 2px;
+	height: 2px;
+	z-index: 100000000;
 }

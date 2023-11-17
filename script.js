@@ -1,5 +1,5 @@
 let init_divs_arr = () => {
-	for (let i = 0; i < 19000; i++)
+	for (let i = 0; i < 10000; i++)
 	{
 		divs_arr.push(document.createElement('div'));
 	}
@@ -24,12 +24,12 @@ let steering_deg = 0;
 let steering = 0;
 let speed = 0;
 let speed_limit = 400;
-let rounding = 5000;
+let rounding = 2000;
 let landed = true;
 let fire = false;
 let inventory = {'trees':[],'fuel':[]};
 let carrier_inventory = {'trees':[], 'fuel':[], 'jet_fuel':0};
-let jet_fuel = 1000;
+let jet_fuel = 10000;
 let limits = [];
 let hiddens = [];
 let store_ns = () => {
@@ -450,6 +450,48 @@ document.body.addEventListener('keyup', (e) => {
 		down_key = false;
 	}
 });
+
+let shoot = (pos) => {
+	let bullet_speed = 100 + speed;
+	let xadd_shoot = 0;
+	let yadd_shoot = 0;
+	xadd_shoot = Math.cos(steering_deg * (Math.PI / 180));
+	yadd_shoot = Math.sin(steering_deg * (Math.PI / 180));
+	let div_bullet = document.createElement('div');
+	div_bullet.setAttribute('class', 'bullet_projectile');
+	div_bullet.style.left = `${pos[0]}px`;
+	div_bullet.style.top = `${pos[1]}px`;
+	//div_bullet.style.zIndex = '1000000';
+	document.body.appendChild(div_bullet);
+	let shoot_anim = setInterval(() => {
+		let last_pos = [...pos];
+		pos[0] += xadd_shoot * bullet_speed;
+		pos[1] += yadd_shoot * bullet_speed;
+		div_bullet.style.left = `${Math.floor(pos[0])}px`;
+		div_bullet.style.top = `${Math.floor(pos[1])}px`;
+		for (let random_airplane_div of document.getElementsByClassName('random_airplane')) {
+			for (let i = 0; i < bullet_speed; i++)
+			{
+				last_pos[0] += xadd_shoot;
+				last_pos[1] += yadd_shoot;
+				if (last_pos[0] >= random_airplane_div.offsetLeft - 30 && last_pos[0] <= random_airplane_div.offsetWidth + random_airplane_div.offsetLeft + 30) {
+					if (last_pos[1] >= random_airplane_div.offsetTop - 100 && last_pos[1] <= random_airplane_div.offsetHeight + random_airplane_div.offsetTop + 100)
+					{
+						inventory['fuel'].push(10000);
+						random_airplane_div.remove();
+						clearInterval(shoot_anim);
+						return;
+					}
+				}
+			}
+		}
+	}, 100);
+	setTimeout(() => {
+		clearInterval(shoot_anim);
+		document.body.removeChild(div_bullet);
+	}, 1000);
+};
+
 document.body.addEventListener('keydown', (e) => {
 	let keycode = e.which || e.keyCode;
 	if (keycode == 38)//up
@@ -469,6 +511,10 @@ document.body.addEventListener('keydown', (e) => {
 		right_key = true;
 	}
 	else if (keycode == 32)
+	{
+		shoot([(window.innerWidth / 2)-x,(window.innerHeight / 2)-y]);
+	}
+	else if (keycode == 66)
 	{
 		bomb_func([(window.innerWidth / 2)-x,(window.innerHeight / 2)-y]);
 	}
@@ -551,6 +597,7 @@ let inventory_string = (obj) => {
 	answer += '}';
 	return answer;
 };
+
 
 
 let airplane_steering_anim = setInterval(() => {
@@ -759,7 +806,7 @@ let carrier_anim = setInterval(() => {
 
 
 let spawn_random_airplane = (area) => {
-	if (random_airplanes.length > 5)
+	if (random_airplanes.length > 6)
 	{
 		return;
 	}
@@ -781,7 +828,7 @@ let spawn_random_airplane = (area) => {
 	airplane_div.setAttribute('id', `airplane${random_airplanes.length}`)
 	document.body.appendChild(airplane_div);
 	document.body.appendChild(radardiv);
-	random_airplanes.push({'airplane_div': airplane_div.getAttribute('id'), 'radardiv': radardiv.getAttribute('id'), 'random_deg': random_deg, 'area': area, 'd': 45});
+	random_airplanes.push({'airplane_div': airplane_div.getAttribute('id'), 'radardiv': radardiv.getAttribute('id'), 'random_deg': random_deg, 'area': area, 'd': 2});
 };
 setInterval(() => {
 	for (let i of random_airplanes.keys())
@@ -819,7 +866,7 @@ setInterval(() => {
 			radardiv.style.visibility = 'hidden';
 		}
 	}
-}, 100);
+}, 1);
 
 let radar_map = setInterval(() => {
 	let locations = [];
@@ -836,11 +883,11 @@ let radar_map = setInterval(() => {
 	{
 		let dot = document.createElement('div');
 		dot.style.position = 'absolute';
-		dot.style.width = '1px';
-		dot.style.height = '1px';
+		dot.style.width = '2px';
+		dot.style.height = '2px';
 		dot.style.backgroundColor = 'yellow';
-		dot.style.left = `${100 + loc[0]}px`;
-		dot.style.top = `${100 + loc[1]}px`;
+		dot.style.left = `${199 + loc[0]}px`;
+		dot.style.top = `${199 + loc[1]}px`;
 		document.body.querySelector('.radar_map').appendChild(dot);
 	}
 }, 100);
@@ -864,32 +911,32 @@ let radar_map2 = setInterval(() => {
 		dot.style.height = '4px';
 		dot.style.backgroundColor = 'red';
 		dot.style.zIndex = '100';
-		dot.style.left = `${98 + loc[0]}px`;
-		dot.style.top = `${98 + loc[1]}px`;
+		dot.style.left = `${198 + loc[0]}px`;
+		dot.style.top = `${198 + loc[1]}px`;
 		document.body.querySelector('.radar_map').appendChild(dot);
 	}
 }, 100);
 
 let radar_map_jet = setInterval(() => {
-	let loc = [0, -100];
+	let loc = [0, -200];
 	let dot = document.createElement('div');
 	dot.style.position = 'absolute';
 	dot.style.width = '2px';
-	dot.style.height = '200px';
+	dot.style.height = '400px';
 	dot.style.backgroundColor = 'green';
 	dot.style.zIndex = '100';
-	dot.style.left = `${99 + loc[0]}px`;
-	dot.style.top = `${99 + loc[1]}px`;
-	loc = [-100, 0];
+	dot.style.left = `${199 + loc[0]}px`;
+	dot.style.top = `${199 + loc[1]}px`;
+	loc = [-200, 0];
 	document.body.querySelector('.radar_map').appendChild(dot);
 	dot = document.createElement('div');
 	dot.style.position = 'absolute';
-	dot.style.width = '200px';
+	dot.style.width = '400px';
 	dot.style.height = '2px';
 	dot.style.backgroundColor = 'green';
 	dot.style.zIndex = '100';
-	dot.style.left = `${99 + loc[0]}px`;
-	dot.style.top = `${99 + loc[1]}px`;
+	dot.style.left = `${199 + loc[0]}px`;
+	dot.style.top = `${199 + loc[1]}px`;
 	document.body.querySelector('.radar_map').appendChild(dot);
 }, 100);
 
@@ -901,8 +948,8 @@ let radar_map_carrier = setInterval(() => {
 	dot.style.height = '6px';
 	dot.style.backgroundColor = 'white';
 	dot.style.zIndex = '100';
-	dot.style.left = `${97 + loc[0]}px`;
-	dot.style.top = `${97 + loc[1]}px`;
+	dot.style.left = `${197 + loc[0]}px`;
+	dot.style.top = `${197 + loc[1]}px`;
 	document.body.querySelector('.radar_map').appendChild(dot);
 }, 100);
 
@@ -999,16 +1046,16 @@ let repeater_8 = (xremote,yremote,callback) => {
 
 let arrow_keys_loop = setInterval(() => {
 	if (left_key) {
-		if (steering > -6)
+		if (steering > -1.3)
 		{
-			steering -= 1.5;
+			steering -= 0.1;
 		}
 		steering_deg += steering;
 	}
 	if (right_key) {
-		if (steering < 6)
+		if (steering < 1.3)
 		{
-			steering += 1.5;
+			steering += 0.1;
 		}
 		steering_deg += steering;
 	}
@@ -1019,8 +1066,8 @@ let arrow_keys_loop = setInterval(() => {
 		}
 		else
 		{
-			jet_fuel -= 5;
-			speed += 5
+			jet_fuel -= 1;
+			speed += 1
 		}
 		landed = false;
 		if (!fire)
@@ -1056,7 +1103,7 @@ let arrow_keys_loop = setInterval(() => {
 			speed += speed >= 20? -10: 0;
 		}
 	}
-}, 50);
+}, 1);
 
 
 let hider_anim = setInterval(() => {
@@ -1069,4 +1116,4 @@ let hider_anim = setInterval(() => {
 
 	let xy_adder = 3;
 	repeater_8(xy_adder,xy_adder, load_island);
-}, 100);
+}, 30);
